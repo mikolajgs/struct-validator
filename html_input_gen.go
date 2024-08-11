@@ -93,7 +93,7 @@ func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
 		}
 
 		if isInt(fieldKind) {
-			fields[field.Name] = fmt.Sprintf(`<input type="text"%s%s%s/>`, fieldNameAttr, fieldIDAttr, validationAttrs)
+			fields[field.Name] = fmt.Sprintf(`<input type="number"%s%s%s/>`, fieldNameAttr, fieldIDAttr, validationAttrs)
 			continue
 		}
 

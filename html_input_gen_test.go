@@ -22,7 +22,7 @@ func TestGenerateHTML(t *testing.T) {
 	if fieldsHTMLInputs["FirstName"] != `<input type="text" name="name_FirstName" id="id_FirstName" required minlength="5" maxlength="25"/>` {
 		t.Fatal("GenerateHTML failed to output HTML for 'FirstName' field")
 	}
-	if fieldsHTMLInputs["Age"] != `<input type="text" name="name_Age" id="id_Age" required min="18" max="150"/>` {
+	if fieldsHTMLInputs["Age"] != `<input type="number" name="name_Age" id="id_Age" required min="18" max="150"/>` {
 		t.Fatal("GenerateHTML failed to output HTML for 'Age' field")
 	}
 	if fieldsHTMLInputs["PostCode"] != `<input type="text" name="name_PostCode" id="id_PostCode" required pattern="^[0-9][0-9]-[0-9][0-9][0-9]$"/>` {
