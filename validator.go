@@ -72,7 +72,7 @@ func Validate(obj interface{}, options *ValidationOptions) (bool, map[string]int
 		}
 
 		// validate only ints and string
-		if !isNotInt(fieldKind) && !isNotString(fieldKind) {
+		if !isInt(fieldKind) && !isString(fieldKind) {
 			continue
 		}
 
@@ -221,15 +221,22 @@ func setValidationFromTag(v *FieldValidation, tag string) {
 	}
 }
 
-func isNotInt(k reflect.Kind) bool {
+func isInt(k reflect.Kind) bool {
 	if k == reflect.Int64 || k == reflect.Int32 || k == reflect.Int16 || k == reflect.Int8 || k == reflect.Int || k == reflect.Uint64 || k == reflect.Uint32 || k == reflect.Uint16 || k == reflect.Uint8 || k == reflect.Uint {
 		return true
 	}
 	return false
 }
 
-func isNotString(k reflect.Kind) bool {
+func isString(k reflect.Kind) bool {
 	if k == reflect.String {
+		return true
+	}
+	return false
+}
+
+func isBool(k reflect.Kind) bool {
+	if k == reflect.Bool {
 		return true
 	}
 	return false
