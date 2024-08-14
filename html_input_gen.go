@@ -10,6 +10,7 @@ import (
 
 // Optional configuration for validation:
 // * RestrictFields defines what struct fields should be generated
+// * ExcludeFields defines fields that should be skipped (also from RestrictFields)
 // * OverwriteFieldTags can be used to overwrite tags for specific fields
 // * OverwriteTagName sets tag used to define validation (default is "validation")
 // * ValidateWhenSuffix will validate certain fields based on their name, eg. "PrimaryEmail" field will need to be a valid email
@@ -19,6 +20,7 @@ import (
 // * NamePrefix - use this to put a prefix in the 'name' attribute
 type HTMLOptions struct {
 	RestrictFields       map[string]bool
+	ExcludeFields        map[string]bool
 	OverwriteFieldTags   map[string]map[string]string
 	OverwriteTagName     string
 	ValidateWhenSuffix   bool
@@ -45,6 +47,11 @@ func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
 
 		// check if only specified field should be checked
 		if options != nil && len(options.RestrictFields) > 0 && !options.RestrictFields[field.Name] {
+			continue
+		}
+
+		// check if field should not be excluded
+		if options != nil && len(options.ExcludeFields) > 0 && options.ExcludeFields[field.Name] {
 			continue
 		}
 
