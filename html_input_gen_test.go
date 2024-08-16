@@ -5,7 +5,7 @@ import (
 )
 
 func TestGenerateHTML(t *testing.T) {
-	s := Test1{}
+	s := &Test1{}
 	fieldsHTMLInputs := GenerateHTML(s, &HTMLOptions{
 		RestrictFields: map[string]bool{
 			"FirstName": true,
@@ -40,7 +40,7 @@ func TestGenerateHTML(t *testing.T) {
 }
 
 func TestGenerateHTMLWithValues(t *testing.T) {
-	s := Test1{}
+	s := &Test1{}
 	fieldsHTMLInputs := GenerateHTML(s, &HTMLOptions{
 		RestrictFields: map[string]bool{
 			"FirstName": true,
@@ -52,7 +52,7 @@ func TestGenerateHTMLWithValues(t *testing.T) {
 		},
 		IDPrefix: "id_",
 		NamePrefix: "name_",
-		Values: map[string]string{
+		OverwriteValues: map[string]string{
 			"FirstName": `Joe "Joe"`,
 			"Age": "40",
 			"Email": "email@example.com",
@@ -77,5 +77,36 @@ func TestGenerateHTMLWithValues(t *testing.T) {
 	}
 	if fieldsHTMLInputs["County"] != `<textarea name="name_County" id="id_County" maxlength="40"></textarea>` {
 		t.Fatal("GenerateHTML failed to output HTML for 'County' field")
+	}
+}
+
+func TestGenerateHTMLWithFieldValues(t *testing.T) {
+	s := &Test1{
+		FirstName: "Joe",
+		Age: 60,
+		Email: "joe@example.com",
+	}
+	fieldsHTMLInputs := GenerateHTML(s, &HTMLOptions{
+		RestrictFields: map[string]bool{
+			"FirstName": true,
+			"Age": true,
+			"Email": true,
+		},
+		IDPrefix: "id_",
+		NamePrefix: "name_",
+		OverwriteValues: map[string]string{
+			"FirstName": `Joe "Joe"`,
+		},
+		FieldValues: true,
+	})
+	
+	if fieldsHTMLInputs["FirstName"] != `<input type="text" name="name_FirstName" id="id_FirstName" required minlength="5" maxlength="25" value="Joe &#34;Joe&#34;"/>` {
+		t.Fatal("GenerateHTML failed to output HTML for 'FirstName' field")
+	}
+	if fieldsHTMLInputs["Age"] != `<input type="number" name="name_Age" id="id_Age" required min="18" max="150" value="60"/>` {
+		t.Fatal("GenerateHTML failed to output HTML for 'Age' field")
+	}
+	if fieldsHTMLInputs["Email"] != `<input type="email" name="name_Email" id="id_Email" required value="joe@example.com"/>` {
+		t.Fatal("GenerateHTML failed to output HTML for 'Email' field")
 	}
 }

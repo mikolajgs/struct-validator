@@ -20,10 +20,10 @@ const TypeEmail = 4
 // * OverwriteTagName sets tag used to define validation (default is "validation")
 // * ValidateWhenSuffix will validate certain fields based on their name, eg. "PrimaryEmail" field will need to be a valid email
 // * OverwriteFieldValues is to use overwrite values for fields, so these values are validated not the ones in struct
-// * TextareaMinLenght is a length at which textarea should be used instead of input, automatically
 // * IDPrefix - if added, an element will contain an 'id' attribute in form of prefix + field name
 // * NamePrefix - use this to put a prefix in the 'name' attribute
-// * Values - fill inputs with the specified values
+// * OverwriteValues - fill inputs with the specified values
+// * FieldValues - when true then fill inputs with struct instance values
 type HTMLOptions struct {
 	RestrictFields       map[string]bool
 	ExcludeFields        map[string]bool
@@ -32,7 +32,8 @@ type HTMLOptions struct {
 	ValidateWhenSuffix   bool
 	IDPrefix             string
 	NamePrefix           string
-	Values               map[string]string
+	OverwriteValues      map[string]string
+	FieldValues          bool
 }
 
 // GenerateHTMLInput takes a struct and generates HTML inputs for each of the fields, eg. <input> or <textarea>
@@ -40,6 +41,7 @@ func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
 	v := reflect.ValueOf(obj)
 	i := reflect.Indirect(v)
 	s := i.Type()
+	elem := v.Elem()
 
 	tagName := "validation"
 	if options != nil && options.OverwriteTagName != "" {
@@ -69,8 +71,21 @@ func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
 
 		// value
 		value := ""
-		if options != nil && len(options.Values) > 0 && options.Values[field.Name] != "" {
-			value = options.Values[field.Name]
+
+		if options != nil && options.FieldValues {
+			if isBool(fieldKind) && elem.Field(j).Bool() {
+				value = "true"
+			}
+			if isString(fieldKind) {
+				value = elem.Field(j).String()
+			}
+			if isInt(fieldKind) {
+				value = fmt.Sprintf("%d", elem.Field(j).Int())
+			}
+		}
+
+		if options != nil && len(options.OverwriteValues) > 0 && options.OverwriteValues[field.Name] != "" {
+			value = options.OverwriteValues[field.Name]
 		}
 
 		// 'id' attribute
