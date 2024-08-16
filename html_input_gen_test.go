@@ -34,7 +34,7 @@ func TestGenerateHTML(t *testing.T) {
 	if fieldsHTMLInputs["Country"] != `<input type="text" name="name_Country" id="id_Country" pattern="^[A-Z][A-Z]$"/>` {
 		t.Fatal("GenerateHTML failed to output HTML for 'Country' field")
 	}
-	if fieldsHTMLInputs["County"] != `<input type="text" name="name_County" id="id_County" maxlength="40"/>` {
+	if fieldsHTMLInputs["County"] != `<textarea name="name_County" id="id_County" maxlength="40"></textarea>` {
 		t.Fatal("GenerateHTML failed to output HTML for 'County' field")
 	}
 }
@@ -75,7 +75,7 @@ func TestGenerateHTMLWithValues(t *testing.T) {
 	if fieldsHTMLInputs["Country"] != `<input type="text" name="name_Country" id="id_Country" pattern="^[A-Z][A-Z]$" value="XX"/>` {
 		t.Fatal("GenerateHTML failed to output HTML for 'Country' field")
 	}
-	if fieldsHTMLInputs["County"] != `<input type="text" name="name_County" id="id_County" maxlength="40"/>` {
+	if fieldsHTMLInputs["County"] != `<textarea name="name_County" id="id_County" maxlength="40"></textarea>` {
 		t.Fatal("GenerateHTML failed to output HTML for 'County' field")
 	}
 }

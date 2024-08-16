@@ -15,7 +15,7 @@ type Test1 struct {
 	BelowZero     int    `validation:"valmin:-6 valmax:-2"`
 	DiscountPrice int    `validation:"valmin:0 valmax:8000"`
 	Country       string `validation_regexp:"^[A-Z][A-Z]$"`
-	County        string `validation:"lenmax:40"`
+	County        string `validation:"lenmax:40 uitextarea"`
 }
 
 type Test2 struct {

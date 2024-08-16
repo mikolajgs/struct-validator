@@ -8,6 +8,11 @@ import (
 	"strings"
 )
 
+const TypeText = 1
+const TypeTextarea = 2
+const TypePassword = 3
+const TypeEmail = 4
+
 // Optional configuration for validation:
 // * RestrictFields defines what struct fields should be generated
 // * ExcludeFields defines fields that should be skipped (also from RestrictFields)
@@ -103,11 +108,11 @@ func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
 		if tagRegexpVal != "" {
 			patternAttr = fmt.Sprintf(` pattern="%s"`, html.EscapeString(tagRegexpVal))
 		}
-		validationAttrs, isEmail, isTextarea := getHTMLAttributesFromTag(tagVal)
+		validationAttrs, inputType := getHTMLAttributesFromTag(tagVal)
 
 		if options != nil && options.ValidateWhenSuffix {
 			if strings.HasSuffix(field.Name, "Email") {
-				isEmail = true
+				inputType = TypeEmail
 			}
 			// Price not supported here yet
 		}
@@ -123,13 +128,17 @@ func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
 		}
 
 		if isString(fieldKind) {
-			if isTextarea {
-				fields[field.Name] = fmt.Sprintf(`<textarea %s%s%s%s>%s</textarea>`, fieldNameAttr, fieldIDAttr, validationAttrs, patternAttr, html.EscapeString(value))
+			if inputType == TypeTextarea {
+				fields[field.Name] = fmt.Sprintf(`<textarea%s%s%s%s>%s</textarea>`, fieldNameAttr, fieldIDAttr, validationAttrs, patternAttr, html.EscapeString(value))
 				continue
 			}
 			fieldTypeAttr := ` type="text"`
-			if isEmail {
+			if inputType == TypeEmail {
 				fieldTypeAttr = ` type="email"`
+			}
+			if inputType == TypePassword {
+				fieldTypeAttr = ` type="password"`
+				fieldValue = ""
 			}
 			fields[field.Name] = fmt.Sprintf(`<input%s%s%s%s%s%s/>`, fieldTypeAttr, fieldNameAttr, fieldIDAttr, validationAttrs, patternAttr, fieldValue)
 			continue
@@ -139,10 +148,9 @@ func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
 	return fields
 }
 
-func getHTMLAttributesFromTag(tag string) (string, bool, bool) {
+func getHTMLAttributesFromTag(tag string) (string, int) {
 	attrs := ""
-	email := false
-	textarea := false
+	inputType := TypeText
 
 	opts := strings.SplitN(tag, " ", -1)
 	for _, opt := range opts {
@@ -150,11 +158,14 @@ func getHTMLAttributesFromTag(tag string) (string, bool, bool) {
 			attrs = attrs + " required"
 		}
 		if opt == "email" {
-			email = true
+			inputType = TypeEmail
 			continue
 		}
 		if opt == "uitextarea" {
-			textarea = true
+			inputType = TypeTextarea
+		}
+		if opt == "uipassword" {
+			inputType = TypePassword
 		}
 		for _, valOpt := range []string{"lenmin", "lenmax", "valmin", "valmax", "regexp"} {
 			if strings.HasPrefix(opt, valOpt+":") {
@@ -182,5 +193,5 @@ func getHTMLAttributesFromTag(tag string) (string, bool, bool) {
 		}
 	}
 
-	return attrs, email, textarea
+	return attrs, inputType
 }
