@@ -18,6 +18,7 @@ import (
 // * TextareaMinLenght is a length at which textarea should be used instead of input, automatically
 // * IDPrefix - if added, an element will contain an 'id' attribute in form of prefix + field name
 // * NamePrefix - use this to put a prefix in the 'name' attribute
+// * Values - fill inputs with the specified values
 type HTMLOptions struct {
 	RestrictFields       map[string]bool
 	ExcludeFields        map[string]bool
@@ -26,6 +27,7 @@ type HTMLOptions struct {
 	ValidateWhenSuffix   bool
 	IDPrefix             string
 	NamePrefix           string
+	Values               map[string]string
 }
 
 // GenerateHTMLInput takes a struct and generates HTML inputs for each of the fields, eg. <input> or <textarea>
@@ -60,6 +62,12 @@ func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
 			continue
 		}
 
+		// value
+		value := ""
+		if options != nil && len(options.Values) > 0 && options.Values[field.Name] != "" {
+			value = options.Values[field.Name]
+		}
+
 		// 'id' attribute
 		fieldIDAttr := ""
 		if options.IDPrefix != "" {
@@ -68,7 +76,12 @@ func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
 		fieldNameAttr := fmt.Sprintf(` name="%s%s"`, options.NamePrefix, field.Name)
 
 		if isBool(fieldKind) {
-			fields[field.Name] = fmt.Sprintf(`<input type="checkbox"%s%s>`, fieldNameAttr, fieldIDAttr)
+			fieldChecked := ""
+			if value == "true" {
+				fieldChecked = " checked"
+			}
+
+			fields[field.Name] = fmt.Sprintf(`<input type="checkbox"%s%s%s>`, fieldNameAttr, fieldIDAttr, fieldChecked)
 			continue
 		}
 
@@ -99,21 +112,26 @@ func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
 			// Price not supported here yet
 		}
 
+		fieldValue := ""
+		if value != "" {
+			fieldValue = fmt.Sprintf(" value=\"%s\"", html.EscapeString(value))
+		}
+
 		if isInt(fieldKind) {
-			fields[field.Name] = fmt.Sprintf(`<input type="number"%s%s%s/>`, fieldNameAttr, fieldIDAttr, validationAttrs)
+			fields[field.Name] = fmt.Sprintf(`<input type="number"%s%s%s%s/>`, fieldNameAttr, fieldIDAttr, validationAttrs, fieldValue)
 			continue
 		}
 
 		if isString(fieldKind) {
 			if isTextarea {
-				fields[field.Name] = fmt.Sprintf(`<textarea %s%s%s%s></textarea>`, fieldNameAttr, fieldIDAttr, validationAttrs, patternAttr)
+				fields[field.Name] = fmt.Sprintf(`<textarea %s%s%s%s>%s</textarea>`, fieldNameAttr, fieldIDAttr, validationAttrs, patternAttr, html.EscapeString(value))
 				continue
 			}
 			fieldTypeAttr := ` type="text"`
 			if isEmail {
 				fieldTypeAttr = ` type="email"`
 			}
-			fields[field.Name] = fmt.Sprintf(`<input%s%s%s%s%s/>`, fieldTypeAttr, fieldNameAttr, fieldIDAttr, validationAttrs, patternAttr)
+			fields[field.Name] = fmt.Sprintf(`<input%s%s%s%s%s%s/>`, fieldTypeAttr, fieldNameAttr, fieldIDAttr, validationAttrs, patternAttr, fieldValue)
 			continue
 		}
 	}
