@@ -46,13 +46,19 @@ type ValidationOptions struct {
 	OverwriteFieldValues map[string]interface{}
 }
 
-// Validate validates fields of a struct. Currently only fields which are string or int (any) are validated.
+// Validate validates fields of a struct.  Currently only fields which are string or int (any) are validated.
 // Func returns boolean value that determines whether value is true or false, and a map of fields that failed
-// validation. See Fail* constants for the values.
+// validation.  See Fail* constants for the values.
 func Validate(obj interface{}, options *ValidationOptions) (bool, map[string]int) {
 	v := reflect.ValueOf(obj)
 	i := reflect.Indirect(v)
 	s := i.Type()
+
+	// TODO: Fix this to traverse the pointer behind reflect.Value properly.  Current this is made to support
+	// struct-db-postgres module that uses this validator.
+	if s.String() == "reflect.Value" {
+		s = reflect.ValueOf(obj.(reflect.Value).Interface()).Type().Elem().Elem()
+	}
 
 	tagName := "validation"
 	if options != nil && options.OverwriteTagName != "" {
