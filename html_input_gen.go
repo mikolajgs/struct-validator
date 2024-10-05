@@ -25,19 +25,19 @@ const TypeEmail = 4
 // * OverwriteValues - fill inputs with the specified values
 // * FieldValues - when true then fill inputs with struct instance values
 type HTMLOptions struct {
-	RestrictFields       map[string]bool
-	ExcludeFields        map[string]bool
-	OverwriteFieldTags   map[string]map[string]string
-	OverwriteTagName     string
-	ValidateWhenSuffix   bool
-	IDPrefix             string
-	NamePrefix           string
-	OverwriteValues      map[string]string
-	FieldValues          bool
+	RestrictFields     map[string]bool
+	ExcludeFields      map[string]bool
+	OverwriteFieldTags map[string]map[string]string
+	OverwriteTagName   string
+	ValidateWhenSuffix bool
+	IDPrefix           string
+	NamePrefix         string
+	OverwriteValues    map[string]string
+	FieldValues        bool
 }
 
 // GenerateHTMLInput takes a struct and generates HTML inputs for each of the fields, eg. <input> or <textarea>
-func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
+func GenerateHTML(obj interface{}, options *HTMLOptions) map[string]string {
 	v := reflect.ValueOf(obj)
 	i := reflect.Indirect(v)
 	s := i.Type()
@@ -47,7 +47,7 @@ func GenerateHTML(obj interface{}, options *HTMLOptions) (map[string]string) {
 	if options != nil && options.OverwriteTagName != "" {
 		tagName = options.OverwriteTagName
 	}
-	
+
 	fields := map[string]string{}
 
 	for j := 0; j < s.NumField(); j++ {

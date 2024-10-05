@@ -9,16 +9,16 @@ func TestGenerateHTML(t *testing.T) {
 	fieldsHTMLInputs := GenerateHTML(s, &HTMLOptions{
 		RestrictFields: map[string]bool{
 			"FirstName": true,
-			"Age": true,
-			"PostCode": true,
-			"Email": true,
-			"Country": true,
-			"County": true,
+			"Age":       true,
+			"PostCode":  true,
+			"Email":     true,
+			"Country":   true,
+			"County":    true,
 		},
-		IDPrefix: "id_",
+		IDPrefix:   "id_",
 		NamePrefix: "name_",
 	})
-	
+
 	if fieldsHTMLInputs["FirstName"] != `<input type="text" name="name_FirstName" id="id_FirstName" required minlength="5" maxlength="25"/>` {
 		t.Fatal("GenerateHTML failed to output HTML for 'FirstName' field")
 	}
@@ -44,22 +44,22 @@ func TestGenerateHTMLWithValues(t *testing.T) {
 	fieldsHTMLInputs := GenerateHTML(s, &HTMLOptions{
 		RestrictFields: map[string]bool{
 			"FirstName": true,
-			"Age": true,
-			"PostCode": true,
-			"Email": true,
-			"Country": true,
-			"County": true,
+			"Age":       true,
+			"PostCode":  true,
+			"Email":     true,
+			"Country":   true,
+			"County":    true,
 		},
-		IDPrefix: "id_",
+		IDPrefix:   "id_",
 		NamePrefix: "name_",
 		OverwriteValues: map[string]string{
 			"FirstName": `Joe "Joe"`,
-			"Age": "40",
-			"Email": "email@example.com",
-			"Country": "XX",
+			"Age":       "40",
+			"Email":     "email@example.com",
+			"Country":   "XX",
 		},
 	})
-	
+
 	if fieldsHTMLInputs["FirstName"] != `<input type="text" name="name_FirstName" id="id_FirstName" required minlength="5" maxlength="25" value="Joe &#34;Joe&#34;"/>` {
 		t.Fatal("GenerateHTML failed to output HTML for 'FirstName' field")
 	}
@@ -83,23 +83,23 @@ func TestGenerateHTMLWithValues(t *testing.T) {
 func TestGenerateHTMLWithFieldValues(t *testing.T) {
 	s := &Test1{
 		FirstName: "Joe",
-		Age: 60,
-		Email: "joe@example.com",
+		Age:       60,
+		Email:     "joe@example.com",
 	}
 	fieldsHTMLInputs := GenerateHTML(s, &HTMLOptions{
 		RestrictFields: map[string]bool{
 			"FirstName": true,
-			"Age": true,
-			"Email": true,
+			"Age":       true,
+			"Email":     true,
 		},
-		IDPrefix: "id_",
+		IDPrefix:   "id_",
 		NamePrefix: "name_",
 		OverwriteValues: map[string]string{
 			"FirstName": `Joe "Joe"`,
 		},
 		FieldValues: true,
 	})
-	
+
 	if fieldsHTMLInputs["FirstName"] != `<input type="text" name="name_FirstName" id="id_FirstName" required minlength="5" maxlength="25" value="Joe &#34;Joe&#34;"/>` {
 		t.Fatal("GenerateHTML failed to output HTML for 'FirstName' field")
 	}

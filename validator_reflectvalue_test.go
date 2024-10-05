@@ -9,7 +9,7 @@ import (
 // a pointer of a pointer to struct.
 // TODO: This should be revisited at some point.
 type Wrapper struct {
-	DoesntMatter string
+	DoesntMatter    string
 	UseMeToValidate []*Test1
 }
 
