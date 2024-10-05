@@ -1,4 +1,7 @@
 # struct-validator
+
+[![Go Reference](https://pkg.go.dev/badge/github.com/mikolajgs/struct-validator.svg)](https://pkg.go.dev/github.com/mikolajgs/struct-validator) [![Go Report Card](https://goreportcard.com/badge/github.com/mikolajgs/struct-validator)](https://goreportcard.com/report/github.com/mikolajgs/struct-validator) ![GitHub release (latest SemVer)](https://img.shields.io/github/v/release/mikolajgs/struct-validator?sort=semver)
+
 Verify the values of struct fields using tags
 
 ### Example code
